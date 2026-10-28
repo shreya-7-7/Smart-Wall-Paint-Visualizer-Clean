@@ -4,7 +4,7 @@ import { Toaster } from 'sonner'
 
 
 import Login from "./pages/Login.jsx";
-import Register from './pages/register.jsx'
+import Register from "./pages/Register.jsx";
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import ConfirmPassword from './pages/ConfirmPassword.jsx'
