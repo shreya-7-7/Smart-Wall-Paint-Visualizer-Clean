@@ -1,0 +1,46 @@
+/* ─── Viewer HUD Buttons (matches catalog fcard-btn styles) ────────── */
+.viewer-hud-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.viewer-hud-btn {
+  min-height: 40px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s;
+}
+
+/* Export Plan - outline style (matches fcard-btn-outline) */
+.viewer-hud-btn-outline {
+  background: transparent;
+  color: #8B7355;
+  border: 1.5px solid #C9A882;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.viewer-hud-btn-outline:hover {
+  border-color: #8B7355;
+  background: #FFF8F0;
+}
+
+/* Return to 2D - primary style (matches fcard-btn-primary) */
+.viewer-hud-btn-primary {
+  background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(139, 115, 85, 0.3);
+}
+
+.viewer-hud-btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 115, 85, 0.35);
+}

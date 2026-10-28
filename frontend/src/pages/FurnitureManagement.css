@@ -1,0 +1,132 @@
+.furniture-management-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 60px 24px 40px 24px;
+  font-family: 'Inter', sans-serif;
+  background: #f7f5f2;
+  box-sizing: border-box;
+}
+
+.furniture-management-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  margin-top: 48px; /* Add space below navbar */
+}
+
+.furniture-management-header h1 {
+  font-size: 2.5rem;
+  color: #3E2723;
+  font-weight: 900;
+  margin: 0;
+}
+
+.add-furniture-btn {
+  padding: 16px 36px;
+  background: #3E2723;
+  color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 1.1rem;
+  box-shadow: 0 6px 18px rgba(62, 39, 35, 0.13);
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.add-furniture-btn:hover {
+  background: #5D4037;
+  box-shadow: 0 10px 24px rgba(62, 39, 35, 0.18);
+}
+
+.furniture-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 18px;
+  background: transparent;
+}
+.furniture-table th {
+  text-align: left;
+  color: #795548;
+  font-size: 1.1rem;
+  font-weight: 700;
+  padding-bottom: 12px;
+}
+.furniture-table td {
+  background: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #3E2723;
+  padding: 18px 18px;
+  border-radius: 16px;
+  vertical-align: middle;
+}
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.product-img-box {
+  width: 70px;
+  height: 70px;
+  background: #f8f8f8;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid #eee;
+  padding: 4px;
+}
+.product-img-box img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.status-active {
+  color: #2E7D32;
+  background: #E8F5E9;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-weight: 800;
+  font-size: 1rem;
+}
+.action-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.edit-btn {
+  background: #F0F4F8;
+  border: 1.5px solid #D1E2EF;
+  color: #2B6CB0;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.edit-btn:hover {
+  background: #e3eefd;
+  color: #174ea6;
+}
+.delete-btn {
+  background: #FFF5F5;
+  border: 1.5px solid #FEB2B2;
+  color: #C53030;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.delete-btn:hover {
+  background: #C53030;
+  color: #fff;
+}

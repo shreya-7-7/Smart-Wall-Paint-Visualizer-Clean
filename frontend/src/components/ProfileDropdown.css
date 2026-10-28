@@ -1,0 +1,110 @@
+/* frontend/src/components/ProfileDropdown.css */
+.profile-dropdown-container {
+  position: relative;
+  display: inline-block;
+}
+
+.profile-trigger {
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 55px;
+  right: 0;
+  width: 320px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.profile-header {
+  padding: 30px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #3E2723 0%, #5D4037 100%);
+  border-radius: 12px 12px 0 0;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-header h3 {
+  margin: 15px 0 5px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.profile-email {
+  font-size: 14px;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.profile-role-badge {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.profile-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 0;
+}
+
+.profile-menu {
+  padding: 8px 0;
+}
+
+.profile-menu-item {
+  width: 100%;
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 15px;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.2s ease;
+}
+
+.profile-menu-item:hover {
+  background: #f5f5f5;
+}
+
+.profile-menu-item.logout {
+  color: #e74c3c;
+}
+
+.profile-menu-item.logout:hover {
+  background: #fee;
+}
+
+.menu-icon {
+  font-size: 18px;
+  width: 24px;
+  display: inline-block;
+}

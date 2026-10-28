@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Production build outputs
+dist/
+*/dist/
+build/
+*/build/
+
+# Environment files
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Local logs and temporary files
+logs/
+*.log
+test-*.js

@@ -1,0 +1,190 @@
+/* ─── Navbar.css — Design Matching Reference ──────────────────────── */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: rgba(250, 248, 245, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid #ECE4DA;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 44px;
+  z-index: 100;
+  box-sizing: border-box;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.brand-logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 2px 4px rgba(255, 107, 83, 0.25));
+}
+
+.navbar-brand-text {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  color: #1F1D1A;
+  transition: color 0.2s ease;
+}
+
+.navbar-brand-wrap:hover .navbar-brand-text {
+  color: #FF6B53;
+}
+
+/* ─── Center Navigation Links ─────────────────────────────────────── */
+.navbar-center {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link-btn {
+  position: relative;
+  background: none;
+  border: none;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #5C554D;
+  padding: 6px 4px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.nav-link-btn:hover {
+  color: #1F1D1A;
+}
+
+.nav-link-btn.active {
+  color: #1F1D1A;
+  font-weight: 700;
+}
+
+.active-underline-indicator {
+  position: absolute;
+  bottom: -2px;
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background-color: #FF6B53;
+}
+
+/* ─── Right Section (Admin & Avatar) ──────────────────────────────── */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-nav-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid #E2D9CC;
+  background: rgba(255, 255, 255, 0.85);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #4A443D;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(31, 29, 26, 0.03);
+}
+
+.admin-nav-pill-btn:hover {
+  background: #FFFFFF;
+  color: #1F1D1A;
+  border-color: #1F1D1A;
+  transform: translateY(-1px);
+}
+
+.auth-avatar-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-avatar-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #355E45;
+  color: #FFFFFF;
+  border: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(53, 94, 69, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbar-avatar-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 10px rgba(53, 94, 69, 0.35);
+}
+
+/* ─── Responsive Media Queries ────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0 24px;
+  }
+
+  .navbar-center {
+    gap: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+    height: 64px;
+  }
+
+  .navbar-brand-text {
+    font-size: 16px;
+  }
+
+  .admin-nav-pill-btn span {
+    display: none;
+  }
+
+  .admin-nav-pill-btn {
+    padding: 7px;
+  }
+
+  .navbar-center {
+    gap: 10px;
+  }
+
+  .nav-link-btn {
+    font-size: 13px;
+  }
+}

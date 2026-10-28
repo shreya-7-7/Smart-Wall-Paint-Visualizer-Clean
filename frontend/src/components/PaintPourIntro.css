@@ -1,0 +1,5 @@
+/* ─── PaintPourIntro.css — Animation disabled per user request ───────── */
+
+.hero-signature-animation {
+  display: none !important;
+}

@@ -1,0 +1,156 @@
+/* ─── Create New Design Button ───────────────────────────────────── */
+.designs-new-btn {
+  background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  white-space: nowrap;
+}
+
+.designs-new-btn:hover {
+  opacity: 0.95;
+  box-shadow: 0 2px 8px rgba(139, 115, 85, 0.3);
+}
+
+/* ─── Design Cards (matches catalog fcard theme) ──────────────────── */
+.dcard {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #F3EDE6;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dcard:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 36px rgba(139, 115, 85, 0.14);
+}
+
+.dcard-img-wrap {
+  position: relative;
+  background: #F9F7F4;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.dcard-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+/* SVG 2D layout thumbnails - show full plan without cropping */
+.dcard-img-wrap svg.dcard-img {
+  object-fit: contain;
+}
+
+.dcard:hover .dcard-img {
+  transform: scale(1.05);
+}
+
+.dcard-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: rgba(139, 115, 85, 0.12);
+  color: #8B7355;
+  border: 1px solid rgba(139, 115, 85, 0.2);
+}
+
+/* 2D Layout badge - light grey, dark text (reference style) */
+.dcard-badge-2d {
+  background: #e5e7eb;
+  color: #4b5563;
+  border-color: #d1d5db;
+}
+
+.dcard-body {
+  padding: 18px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  align-items: center;
+  text-align: center;
+}
+
+.dcard-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1F2937;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.dcard-meta {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Button group - consistent alignment and spacing */
+.dcard-actions {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  margin-top: 14px;
+  width: 100%;
+}
+
+.dcard-btn {
+  flex: 1;
+  min-height: 42px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dcard-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Edit Plan - outline style (matches fcard-btn-outline) */
+.dcard-btn-continue {
+  background: transparent;
+  color: #8B7355;
+  border: 1.5px solid #C9A882;
+}
+
+.dcard-btn-continue:hover {
+  border-color: #8B7355;
+  background: #FFF8F0;
+}
+
+/* View in 3D - primary style (matches fcard-btn-primary) */
+.dcard-btn-3d {
+  background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+  color: #fff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(139, 115, 85, 0.3);
+}
+
+.dcard-btn-3d:hover {
+  box-shadow: 0 4px 12px rgba(139, 115, 85, 0.35);
+}
