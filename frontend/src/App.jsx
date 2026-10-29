@@ -69,6 +69,8 @@ function App() {
         <Route path="/payment/:id" element={<Payment />} />
 
         {/* Admin routes */}
+        <Route path="/admin" element={<Navigate to="/admin-dashboard" replace />} />
+        <Route path="/admin/dashboard" element={<Navigate to="/admin-dashboard" replace />} />
         <Route path="/admin-login" element={<AdminLogin />} />
         <Route path="/admin-dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/users" element={<AdminRoute><ManageUsers /></AdminRoute>} />

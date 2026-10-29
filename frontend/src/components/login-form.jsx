@@ -89,10 +89,6 @@ export function LoginForm({ className, ...props }) {
                   Don&apos;t have an account?{" "}
                   <Link to="/register" className="underline underline-offset-4">Sign up</Link>
                 </FieldDescription>
-                <FieldDescription className="text-center">
-                  Are you an admin?{" "}
-                  <Link to="/admin-login" className="underline underline-offset-4">Admin login</Link>
-                </FieldDescription>
               </Field>
             </FieldGroup>
           </form>

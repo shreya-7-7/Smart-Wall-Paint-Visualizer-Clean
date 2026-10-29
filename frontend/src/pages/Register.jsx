@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import API from '@/services/api'
 import './Login.css'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,8 +32,15 @@ export default function RegisterPage() {
     }
     setIsLoading(true)
     try {
-      await API.post('/auth/register', { name, email, password })
-      navigate('/login')
+      const cleanEmail = email.trim().toLowerCase()
+      await API.post('/auth/register', { name: name.trim(), email: cleanEmail, password })
+      navigate('/login', {
+        state: {
+          registeredEmail: cleanEmail,
+          message: 'Account created successfully! Please sign in with your credentials.',
+          from: location.state?.from
+        }
+      })
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.')
     } finally {

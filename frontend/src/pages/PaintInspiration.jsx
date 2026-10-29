@@ -250,7 +250,6 @@ const PaintInspiration = () => {
             <button type="button" onClick={() => navigate('/')} className="footer-link-btn">Home</button>
             <button type="button" onClick={() => navigate('/paint-visualizer')} className="footer-link-btn">Paint Studio</button>
             <button type="button" onClick={() => navigate('/about')} className="footer-link-btn">About</button>
-            <button type="button" onClick={() => navigate('/admin-dashboard')} className="footer-link-btn">Admin Dashboard</button>
           </div>
           <p className="footer-copyright">&copy; 2026 Wall Paint Visualizer. All rights reserved.</p>
         </div>

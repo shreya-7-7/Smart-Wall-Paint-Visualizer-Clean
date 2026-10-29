@@ -21,7 +21,8 @@ const AdminLogin = () => {
     }
     setIsLoading(true)
     try {
-      const { data } = await API.post('/auth/adminlogin', { email, password })
+      const cleanEmail = email.trim().toLowerCase()
+      const { data } = await API.post('/auth/adminlogin', { email: cleanEmail, password })
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('role', data.user.role)
@@ -112,6 +113,7 @@ const AdminLogin = () => {
                   className="auth-eye-btn"
                   onClick={() => setShowPassword(v => !v)}
                   tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

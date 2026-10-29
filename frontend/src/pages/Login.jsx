@@ -1,30 +1,37 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import API from '@/services/api'
 import './Login.css'
 
 export default function LoginPage() {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const location = useLocation()
+  const [email, setEmail] = useState(() => location.state?.registeredEmail || '')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState(() => location.state?.message || '')
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setError('')
+    setSuccessMessage('')
     if (!email || !password) {
       setError('Email and password are required.')
       return
     }
     setIsLoading(true)
     try {
-      const { data } = await API.post('/auth/login', { email, password })
+      const cleanEmail = email.trim().toLowerCase()
+      const { data } = await API.post('/auth/login', { email: cleanEmail, password })
       localStorage.setItem('token', data.token)
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('role', data.user.role)
-      navigate(data.user.role === 'admin' ? '/admin-dashboard' : '/paint-visualizer')
+      const targetPath = data.user.role === 'admin'
+        ? '/admin-dashboard'
+        : (location.state?.from || '/paint-visualizer')
+      navigate(targetPath)
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.')
     } finally {
@@ -69,6 +76,7 @@ export default function LoginPage() {
           </div>
 
           <form className="auth-form" onSubmit={handleLogin}>
+            {successMessage && <div className="auth-success">{successMessage}</div>}
             {error && <div className="auth-error">{error}</div>}
 
             <div className="auth-field">
@@ -104,6 +112,7 @@ export default function LoginPage() {
                   className="auth-eye-btn"
                   onClick={() => setShowPassword(v => !v)}
                   tabIndex={-1}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -129,10 +138,6 @@ export default function LoginPage() {
             <p className="auth-footer-text">
               Don't have an account?{' '}
               <Link to="/register" className="auth-link">Sign up</Link>
-            </p>
-            <p className="auth-footer-text">
-              Admin?{' '}
-              <Link to="/admin-login" className="auth-link">Admin login</Link>
             </p>
           </div>
         </div>

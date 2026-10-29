@@ -1,7 +1,7 @@
 // frontend/src/components/ProfileDropdown.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUserEdit, FaTools, FaSignOutAlt } from 'react-icons/fa';
+import { FaUserEdit, FaSignOutAlt } from 'react-icons/fa';
 import Avatar from './Avatar';
 import './ProfileDropdown.css';
 
@@ -65,20 +65,6 @@ const ProfileDropdown = ({ onLogout }) => {
               <span className="menu-icon"><FaUserEdit /></span>
               Manage Profile
             </button>
-
-
-            {role === 'admin' && (
-              <button 
-                className="profile-menu-item"
-                onClick={() => {
-                  setIsOpen(false);
-                  navigate('/admin/dashboard');
-                }}
-              >
-                <span className="menu-icon"><FaTools /></span>
-                Admin Dashboard
-              </button>
-            )}
           </div>
 
           <div className="profile-divider"></div>

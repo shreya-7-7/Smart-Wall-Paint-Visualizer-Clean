@@ -36,6 +36,8 @@ import {
   Heart,
   Sparkle,
   Feather,
+  LogIn,
+  UserPlus,
 } from 'lucide-react';
 import './PaintVisualizer.css';
 
@@ -323,6 +325,16 @@ export default function PaintVisualizer() {
   const [designToDelete, setDesignToDelete] = useState(null);
   const [isDeletingDesign, setIsDeletingDesign] = useState(false);
 
+  // Customer Access Gate State (Part A)
+  const [showAuthGateModal, setShowAuthGateModal] = useState(false);
+  const [authGateMode, setAuthGateMode] = useState('login'); // 'login' | 'register'
+  const [authGateName, setAuthGateName] = useState('');
+  const [authGateEmail, setAuthGateEmail] = useState('');
+  const [authGatePassword, setAuthGatePassword] = useState('');
+  const [authGateError, setAuthGateError] = useState('');
+  const [isSubmittingAuth, setIsSubmittingAuth] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+
   // Status & Clipboard Feedback
   const [statusMessage, setStatusMessage] = useState({
     text: 'Welcome to Paint Studio. Design your space, your way.',
@@ -556,8 +568,24 @@ export default function PaintVisualizer() {
     setFeedback(`Loaded ${preset.name} preset!`, 'success');
   }, []);
 
+  // Customer Authentication Gate Helper: checks if user is logged in
+  const checkCustomerAuth = useCallback((action) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      return true;
+    }
+    setPendingAction(action || 'studio');
+    setAuthGateError('');
+    setShowAuthGateModal(true);
+    return false;
+  }, []);
+
   // Upload Photo Handler
   const handleUpload = (event) => {
+    if (!checkCustomerAuth('upload')) {
+      event.target.value = '';
+      return;
+    }
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -601,6 +629,7 @@ export default function PaintVisualizer() {
   // NEW DESIGN WORKFLOW (With Safe Confirmation)
   // ─────────────────────────────────────────────────────────────────────────
   const handleInitiateNewDesign = () => {
+    if (!checkCustomerAuth('newDesign')) return;
     // If there is working project content, confirm before clearing
     if (walls.length > 0 || isDrawing || isDrawingCutout) {
       setShowNewDesignModal(true);
@@ -948,6 +977,7 @@ export default function PaintVisualizer() {
         const screenDist = Math.hypot((pt.x - coords.x) * scaleX, (pt.y - coords.y) * scaleY);
 
         if (screenDist <= screenTolerance) {
+          if (!checkCustomerAuth('edit')) return;
           recordHistory();
           dragRef.current = {
             wallId: selectedWall.id,
@@ -1059,12 +1089,14 @@ export default function PaintVisualizer() {
     const point = { x: coords.x, y: coords.y };
 
     if (isDrawing) {
+      if (!checkCustomerAuth('draw')) return;
       setCurrentPoints((prev) => [...prev, point]);
       setFeedback(`Point #${currentPoints.length + 1} added. Click corners, then "Finish Wall".`, 'info');
       return;
     }
 
     if (isDrawingCutout) {
+      if (!checkCustomerAuth('cutout')) return;
       setCurrentCutoutPoints((prev) => [...prev, point]);
       setFeedback(`Cutout point #${currentCutoutPoints.length + 1} added. Outline object, then "Finish Cutout".`, 'info');
       return;
@@ -1094,6 +1126,7 @@ export default function PaintVisualizer() {
 
   // Wall Creation Handlers
   const startDrawingWall = () => {
+    if (!checkCustomerAuth('draw')) return;
     setViewMode('edit');
     setIsDrawing(true);
     setIsDrawingCutout(false);
@@ -1143,6 +1176,7 @@ export default function PaintVisualizer() {
 
   // Cutout Tool Handlers
   const startDrawingCutout = () => {
+    if (!checkCustomerAuth('cutout')) return;
     if (!selectedWallId) {
       setFeedback('Select a wall first before adding an object cutout.', 'error');
       return;
@@ -1240,6 +1274,7 @@ export default function PaintVisualizer() {
   };
 
   const deleteWall = (id) => {
+    if (!checkCustomerAuth('edit')) return;
     recordHistory();
     setWalls((prev) => prev.filter((w) => w.id !== id));
     if (selectedWallId === id) setSelectedWallId(null);
@@ -1254,6 +1289,7 @@ export default function PaintVisualizer() {
 
   // High-Resolution PNG Export (Guaranteed 100% clean)
   const downloadImage = () => {
+    if (!checkCustomerAuth('export')) return;
     const canvas = canvasRef.current;
     const image = imageRef.current;
     if (!canvas || !image) {
@@ -1325,6 +1361,7 @@ export default function PaintVisualizer() {
 
   // Open Save / Update Modal with current design metadata
   const openSaveModal = () => {
+    if (!checkCustomerAuth('save')) return;
     const canvas = canvasRef.current;
     const image = imageRef.current;
     if (!canvas || !image) {
@@ -1334,6 +1371,146 @@ export default function PaintVisualizer() {
     setSaveMakeoverName(imageName || 'My Room Makeover');
     setSaveMode(activeDesignId ? 'update' : 'new');
     setShowSaveModal(true);
+  };
+
+  // Resume the action that prompted the Customer Access Gate after successful auth
+  const resumePendingAction = (action) => {
+    if (!action) return;
+    if (action === 'upload') {
+      setTimeout(() => fileInputRef.current?.click(), 100);
+    } else if (action === 'draw') {
+      startDrawingWall();
+    } else if (action === 'newDesign') {
+      handleInitiateNewDesign();
+    } else if (action === 'save') {
+      openSaveModal();
+    } else if (action === 'export') {
+      downloadImage();
+    } else if (action === 'cutout') {
+      startDrawingCutout();
+    } else if (action === 'edit') {
+      setIsEditingVertices(true);
+    }
+  };
+
+  // Handle Customer Sign In within Paint Studio
+  const handleAuthGateLogin = async (e) => {
+    e?.preventDefault();
+    if (!authGateEmail.trim() || !authGatePassword) {
+      setAuthGateError('Please enter both email and password.');
+      return;
+    }
+    setIsSubmittingAuth(true);
+    setAuthGateError('');
+
+    try {
+      const res = await API.post('/auth/login', {
+        email: authGateEmail.trim().toLowerCase(),
+        password: authGatePassword,
+      });
+
+      if (res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user || res.data));
+        if (res.data.user?.role) {
+          localStorage.setItem('role', res.data.user.role);
+        }
+        window.dispatchEvent(new Event('storage'));
+
+        // Claim any existing guest designs to this user account
+        const guestSession = localStorage.getItem('paint_guest_session_id');
+        if (guestSession) {
+          try {
+            await API.post('/paint/designs/claim', { guestSessionId: guestSession });
+          } catch {
+            // non-blocking
+          }
+        }
+
+        await fetchBackendDesigns();
+
+        const actionToResume = pendingAction;
+        setShowAuthGateModal(false);
+        setAuthGateEmail('');
+        setAuthGatePassword('');
+        setPendingAction(null);
+        setFeedback(`Welcome back, ${res.data.user?.name || 'Customer'}!`, 'success');
+
+        resumePendingAction(actionToResume);
+      } else {
+        setAuthGateError('Sign in failed. Please check your credentials.');
+      }
+    } catch (err) {
+      setAuthGateError(err.response?.data?.message || 'Invalid email or password.');
+    } finally {
+      setIsSubmittingAuth(false);
+    }
+  };
+
+  // Handle Customer Registration within Paint Studio
+  const handleAuthGateRegister = async (e) => {
+    e?.preventDefault();
+    if (!authGateName.trim()) {
+      setAuthGateError('Please provide your full name.');
+      return;
+    }
+    if (!authGateEmail.trim()) {
+      setAuthGateError('Please provide a valid email address.');
+      return;
+    }
+    if (!authGatePassword || authGatePassword.length < 8) {
+      setAuthGateError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    setIsSubmittingAuth(true);
+    setAuthGateError('');
+
+    try {
+      const res = await API.post('/auth/register', {
+        name: authGateName.trim(),
+        email: authGateEmail.trim().toLowerCase(),
+        password: authGatePassword,
+      });
+
+      if (res.data?.token) {
+        localStorage.setItem('token', res.data.token);
+        localStorage.setItem('user', JSON.stringify(res.data.user || res.data));
+        if (res.data.user?.role) {
+          localStorage.setItem('role', res.data.user.role);
+        }
+        window.dispatchEvent(new Event('storage'));
+
+        // Claim any existing guest designs to this newly registered customer account
+        const guestSession = localStorage.getItem('paint_guest_session_id');
+        if (guestSession) {
+          try {
+            await API.post('/paint/designs/claim', { guestSessionId: guestSession });
+          } catch {
+            // non-blocking
+          }
+        }
+
+        await fetchBackendDesigns();
+
+        const actionToResume = pendingAction;
+        setShowAuthGateModal(false);
+        setAuthGateName('');
+        setAuthGateEmail('');
+        setAuthGatePassword('');
+        setPendingAction(null);
+        setFeedback(`Account created! Welcome, ${res.data.user?.name || 'Customer'}!`, 'success');
+
+        resumePendingAction(actionToResume);
+      } else {
+        setAuthGateError('Registration completed. Please sign in with your credentials.');
+        setAuthGateMode('login');
+      }
+    } catch (err) {
+      setAuthGateError(err.response?.data?.message || 'Registration failed. Email may already be in use.');
+    } finally {
+      setIsSubmittingAuth(false);
+    }
   };
 
   // Execute Save / Update Makeover (MongoDB Atlas + LocalStorage Fallback)
@@ -1602,7 +1779,11 @@ export default function PaintVisualizer() {
           <button
             type="button"
             className="paint-tool-btn"
-            onClick={() => fileInputRef.current?.click()}
+            onClick={() => {
+              if (checkCustomerAuth('upload')) {
+                fileInputRef.current?.click();
+              }
+            }}
             title="Upload room photo"
           >
             <Upload size={17} />
@@ -1639,6 +1820,7 @@ export default function PaintVisualizer() {
             type="button"
             className={`paint-tool-btn ${isEditingVertices ? 'paint-tool-active' : ''}`}
             onClick={() => {
+              if (!checkCustomerAuth('edit')) return;
               setViewMode('edit');
               setIsEditingVertices((v) => {
                 const next = !v;
@@ -1815,7 +1997,11 @@ export default function PaintVisualizer() {
               {/* Upload Your Own */}
               <div
                 className="paint-upload-dashed-box"
-                onClick={() => fileInputRef.current?.click()}
+                onClick={() => {
+                  if (checkCustomerAuth('upload')) {
+                    fileInputRef.current?.click();
+                  }
+                }}
               >
                 <Upload size={20} className="paint-upload-icon-art" />
                 <span className="paint-upload-main-text">Upload Your Own</span>
@@ -1844,6 +2030,7 @@ export default function PaintVisualizer() {
                   type="button"
                   className={`paint-tool-row-btn ${isEditingVertices ? 'paint-tool-row-active' : ''}`}
                   onClick={() => {
+                    if (!checkCustomerAuth('edit')) return;
                     setViewMode('edit');
                     setIsEditingVertices((v) => {
                       const next = !v;
@@ -2832,6 +3019,226 @@ export default function PaintVisualizer() {
               >
                 Done
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Customer Access Gate Modal (Part A) */}
+      {showAuthGateModal && (
+        <div
+          className="paint-modal-backdrop"
+          onClick={() => {
+            if (!isSubmittingAuth) setShowAuthGateModal(false);
+          }}
+          role="presentation"
+        >
+          <div
+            className="paint-modal-dialog paint-auth-gate-dialog"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="paint-auth-gate-title"
+          >
+            <button
+              type="button"
+              className="paint-modal-close"
+              onClick={() => setShowAuthGateModal(false)}
+              aria-label="Close"
+              disabled={isSubmittingAuth}
+            >
+              <X size={18} />
+            </button>
+
+            <div className="paint-auth-gate-header">
+              <div className="paint-auth-gate-icon-badge" aria-hidden="true">
+                <Shield size={24} color="#FF6B53" />
+              </div>
+              <h2 id="paint-auth-gate-title" className="paint-auth-gate-title">
+                Customer Sign In Required
+              </h2>
+              <p className="paint-auth-gate-subtitle">
+                Please sign in to your account or create a new customer account to upload photos, customize wall geometry, and save your paint makeovers.
+              </p>
+            </div>
+
+            <div className="paint-auth-gate-tabs" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={authGateMode === 'login'}
+                className={`paint-auth-gate-tab ${authGateMode === 'login' ? 'active' : ''}`}
+                onClick={() => {
+                  setAuthGateMode('login');
+                  setAuthGateError('');
+                }}
+              >
+                <LogIn size={15} />
+                <span>Sign In</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={authGateMode === 'register'}
+                className={`paint-auth-gate-tab ${authGateMode === 'register' ? 'active' : ''}`}
+                onClick={() => {
+                  setAuthGateMode('register');
+                  setAuthGateError('');
+                }}
+              >
+                <UserPlus size={15} />
+                <span>Sign Up as Customer</span>
+              </button>
+            </div>
+
+            {authGateError && (
+              <div className="paint-auth-gate-error" role="alert">
+                <span>{authGateError}</span>
+              </div>
+            )}
+
+            {authGateMode === 'login' ? (
+              <form onSubmit={handleAuthGateLogin} className="paint-auth-gate-form">
+                <div className="paint-modal-field">
+                  <label className="paint-modal-label" htmlFor="gate-login-email">
+                    Email Address
+                  </label>
+                  <input
+                    id="gate-login-email"
+                    type="email"
+                    className="paint-modal-input"
+                    value={authGateEmail}
+                    onChange={(e) => setAuthGateEmail(e.target.value)}
+                    placeholder="customer@example.com"
+                    autoComplete="email"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="paint-modal-field">
+                  <label className="paint-modal-label" htmlFor="gate-login-password">
+                    Password
+                  </label>
+                  <input
+                    id="gate-login-password"
+                    type="password"
+                    className="paint-modal-input"
+                    value={authGatePassword}
+                    onChange={(e) => setAuthGatePassword(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    required
+                  />
+                </div>
+
+                <div className="paint-modal-actions" style={{ marginTop: 20 }}>
+                  <button
+                    type="button"
+                    className="paint-btn-modal-cancel"
+                    onClick={() => setShowAuthGateModal(false)}
+                    disabled={isSubmittingAuth}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="paint-btn-modal-confirm"
+                    disabled={isSubmittingAuth}
+                  >
+                    {isSubmittingAuth ? 'Signing In...' : 'Sign In'}
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleAuthGateRegister} className="paint-auth-gate-form">
+                <div className="paint-modal-field">
+                  <label className="paint-modal-label" htmlFor="gate-reg-name">
+                    Full Name
+                  </label>
+                  <input
+                    id="gate-reg-name"
+                    type="text"
+                    className="paint-modal-input"
+                    value={authGateName}
+                    onChange={(e) => setAuthGateName(e.target.value)}
+                    placeholder="Jane Doe"
+                    autoComplete="name"
+                    required
+                    autoFocus
+                  />
+                </div>
+
+                <div className="paint-modal-field">
+                  <label className="paint-modal-label" htmlFor="gate-reg-email">
+                    Email Address
+                  </label>
+                  <input
+                    id="gate-reg-email"
+                    type="email"
+                    className="paint-modal-input"
+                    value={authGateEmail}
+                    onChange={(e) => setAuthGateEmail(e.target.value)}
+                    placeholder="customer@example.com"
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+
+                <div className="paint-modal-field">
+                  <label className="paint-modal-label" htmlFor="gate-reg-password">
+                    Password (min 8 characters)
+                  </label>
+                  <input
+                    id="gate-reg-password"
+                    type="password"
+                    className="paint-modal-input"
+                    value={authGatePassword}
+                    onChange={(e) => setAuthGatePassword(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="new-password"
+                    minLength={8}
+                    required
+                  />
+                </div>
+
+                <div className="paint-modal-actions" style={{ marginTop: 20 }}>
+                  <button
+                    type="button"
+                    className="paint-btn-modal-cancel"
+                    onClick={() => setShowAuthGateModal(false)}
+                    disabled={isSubmittingAuth}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="paint-btn-modal-confirm"
+                    disabled={isSubmittingAuth}
+                  >
+                    {isSubmittingAuth ? 'Creating Account...' : 'Sign Up as Customer'}
+                  </button>
+                </div>
+              </form>
+            )}
+
+            <div className="paint-auth-gate-footer">
+              <span>Prefer full page? </span>
+              <Link
+                to="/login"
+                state={{ from: '/paint-visualizer' }}
+                className="paint-auth-gate-link"
+              >
+                Sign In
+              </Link>
+              <span> or </span>
+              <Link
+                to="/register"
+                state={{ from: '/paint-visualizer' }}
+                className="paint-auth-gate-link"
+              >
+                Sign Up as Customer
+              </Link>
             </div>
           </div>
         </div>
