@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import API from '../services/api';
 import Navbar from '../components/Navbar';
 import {
@@ -269,6 +269,7 @@ function ArtistPaletteGraphic({ color = '#FF6B53', size = 56, daubs = [] }) {
 }
 
 export default function PaintVisualizer() {
+  const location = useLocation();
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const imageUrlRef = useRef('');
@@ -1684,6 +1685,33 @@ export default function PaintVisualizer() {
       setFeedback(`Could not load makeover "${designItem.name || 'Room Makeover'}".`, 'error');
     }
   };
+
+  // Restore saved makeover specified via URL parameter (e.g. ?id=<designId> or ?designId=<designId>)
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const targetId = searchParams.get('id') || searchParams.get('designId');
+    if (!targetId) return;
+
+    let isMounted = true;
+    const fetchAndRestore = async () => {
+      try {
+        const res = await API.get(`/paint/designs/${targetId}`);
+        if (isMounted && res.data?.design) {
+          await loadSavedDesign(res.data.design);
+        }
+      } catch (err) {
+        if (isMounted) {
+          console.warn('Could not load saved design from URL parameter:', err.message);
+          setFeedback('Could not load requested saved design.', 'error');
+        }
+      }
+    };
+
+    fetchAndRestore();
+    return () => {
+      isMounted = false;
+    };
+  }, [location.search]);
 
   // Delete Makeover (MongoDB Cloud + LocalStorage)
   const executeDeleteDesign = async (design) => {
